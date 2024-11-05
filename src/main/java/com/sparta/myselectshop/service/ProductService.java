@@ -50,6 +50,7 @@ public class ProductService {
 
     }
 
+    @Transactional(readOnly = true) // 지연로딩을 위한 트랜잭션
     public Page<ProductResponseDto> getProduct(User user, int page, int size, String sortBy, boolean isAsc) {
         // 페이징 처리를 위한 Pageable 객체 생성
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
