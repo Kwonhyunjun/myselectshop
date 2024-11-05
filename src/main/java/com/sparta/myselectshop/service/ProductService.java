@@ -4,11 +4,13 @@ import com.sparta.myselectshop.dto.ProductMypriceRequestDto;
 import com.sparta.myselectshop.dto.ProductRequestDto;
 import com.sparta.myselectshop.dto.ProductResponseDto;
 import com.sparta.myselectshop.entity.Product;
+import com.sparta.myselectshop.entity.User;
 import com.sparta.myselectshop.naver.dto.ItemDto;
 import com.sparta.myselectshop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +23,9 @@ public class ProductService {
 
     public static final int MIN_MY_PRICE = 100;
 
-    public ProductResponseDto createProduct(ProductRequestDto requestDto) {
+    public ProductResponseDto createProduct(ProductRequestDto requestDto, User user) {
 
-        Product product = productRepository.save(new Product(requestDto));
+        Product product = productRepository.save(new Product(requestDto, user));
 
         return new ProductResponseDto(product);
     }
@@ -44,8 +46,8 @@ public class ProductService {
 
     }
 
-    public List<ProductResponseDto> getProduct() {
-        List<Product> productList = productRepository.findAll();
+    public List<ProductResponseDto> getProduct(User user) {
+        List<Product> productList = productRepository.findAllByUser(user);
         List<ProductResponseDto> responseDtos = new ArrayList<>();
 
         for (Product product : productList) {
@@ -59,5 +61,16 @@ public class ProductService {
         Product product = productRepository.findById(id).orElseThrow(() -> new NullPointerException("해당 상품을 존재하지 않습니다."));
 
         product.updateByItemDto(itemDto);
+    }
+
+    public List<ProductResponseDto> getAllProducts(){
+        List<Product> productList = productRepository.findAll();
+        List<ProductResponseDto> responseDtos = new ArrayList<>();
+
+        for (Product product : productList) {
+            responseDtos.add(new ProductResponseDto(product));
+        }
+
+        return responseDtos;
     }
 }
